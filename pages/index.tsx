@@ -1,17 +1,17 @@
-import * as React from 'react';
+import * as React from 'react'
 import Head from 'next/head'
 import { GetStaticProps } from 'next'
 import { getEvents, MdEvent } from '../lib/events'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
 import jaLocale from '@fullcalendar/core/locales/ja'
-import { Box, Container, Grid } from '@mui/material'
+import { Box, Button, CardActions, Container, Grid } from '@mui/material'
 import { styled } from '@mui/material/styles';
-import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
 
 const GA_TRACKING_ID = "G-KWMLJ6PYMB" // 'G-XXXXX'
 
@@ -27,11 +27,17 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-const getStringFromArray = (array: string[]) => {
+const getStringFromArray = (array: string[]): string => {
   return array.reduce((a, c) => a + '/' + c, '').slice(1)
 }
 
-export default function Home({ events }: { events: MdEvent[] }) {
+const isSameDate = (date1: Date, date2: Date): boolean => {
+  return date1.getFullYear() === date2.getFullYear()
+     && date1.getMonth() === date2.getMonth()
+     && date1.getDate() === date2.getDate();
+}
+
+export default function Home({ events, month }: { events: MdEvent[], month: number }) {
   const displayedEvents = events.map(e => {
     return {
       title: e.file.matter.title,
@@ -40,10 +46,13 @@ export default function Home({ events }: { events: MdEvent[] }) {
     }
   })
   const commingEvents = events.filter(e => new Date(e.file.matter.start) > new Date())
+  const [listedEvents, setListedEvents] = React.useState<MdEvent[]>(commingEvents)
+  const [listTitle, setListTitle] = React.useState(`${month}月 本日以降のライブイベント`)
 
   const getFileFromTitle = (title: string) => {
     return events.filter(v => v.file.matter.title === title)[0].file
   }
+
 
   return (
     <div>
@@ -76,7 +85,7 @@ export default function Home({ events }: { events: MdEvent[] }) {
               <Grid item md={6}>
                 <Box style={{ position: "sticky", top: "00px" }}>
                   <FullCalendar
-                    plugins={[dayGridPlugin]}
+                    plugins={[dayGridPlugin, interactionPlugin]}
                     locale={jaLocale}
                     events={displayedEvents}
                     initialView="dayGridMonth"
@@ -101,28 +110,33 @@ export default function Home({ events }: { events: MdEvent[] }) {
                         </div>
                       )
                     }}
+                    dateClick={(arg) => {
+                      setListedEvents(events.filter(e => isSameDate(new Date(e.file.matter.start), arg.date)))
+                      setListTitle((arg.date.getMonth() + 1) + '月' + arg.date.getDate() + '日のライブイベント')
+                    }}
                   />
                 </Box>
               </Grid>
               <Grid item md={6}>
-                <h2>12月 本日以降のライブイベント</h2>
+                <h2>{listTitle}</h2>
                 <Grid container spacing={3}>
-                  {commingEvents.map(e => {
+                  {listedEvents.length > 0 ? listedEvents.map(e => {
                     return (
                       <Grid item xs={12} key={e.file.id}>
                         <Card>
-                          <CardActionArea href={e.file.matter.url}>
-                            <CardContent>
-                              <div>{e.file.matter.start}~</div>
-                              <h3>{e.file.matter.title}</h3>
-                              <Typography mb={2}>出演者: {getStringFromArray(e.file.matter.actors)}</Typography>
-                              <Typography mb={1}>場所: {getStringFromArray(e.file.matter.places)}</Typography>
-                            </CardContent>
-                          </CardActionArea>
+                          <CardContent>
+                            <div>{e.file.matter.start}~</div>
+                            <h3>{e.file.matter.title}</h3>
+                            <Typography mb={2}>出演者: {getStringFromArray(e.file.matter.actors)}</Typography>
+                            <Typography>場所: {getStringFromArray(e.file.matter.places)}</Typography>
+                          </CardContent>
+                          <CardActions>
+                            <Button href={e.file.matter.url}>公式サイトはこちら</Button>
+                          </CardActions>
                         </Card>
                       </Grid>
                     )
-                  })}
+                  }) : <Grid item xs={12}>予定されているイベントはないようです (T_T) </Grid>}
                 </Grid>
               </Grid>
             </Grid>
@@ -138,10 +152,12 @@ export default function Home({ events }: { events: MdEvent[] }) {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const events = await getEvents()
+  const month = (new Date()).getMonth() + 1
+  const events = await getEvents(month)
   return {
     props: {
-      events
+      events,
+      month
     }
   }
 }

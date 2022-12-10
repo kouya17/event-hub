@@ -28,8 +28,7 @@ export type MdEvent = {
 
 const eventsDirectory = path.join(process.cwd(), 'events')
 
-export async function getEvents(): Promise<MdEvent[]> {
-  const month = 12
+export async function getEvents(month: number): Promise<MdEvent[]> {
   const fileNames = fs.readdirSync(eventsDirectory)
   const events: MdEvent[] = await Promise.all(fileNames
     .filter(f => parseInt(f.substring(5, 7)) === month || parseInt(f.substring(22, 24)) === month)
