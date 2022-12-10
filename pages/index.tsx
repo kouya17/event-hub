@@ -75,10 +75,10 @@ export default function Home({ events, month }: { events: MdEvent[], month: numb
       </Head>
 
       <main>
-        <Container>
-          <h1>
+        <Container maxWidth='xl'>
+          <Typography variant='h3' className='h1' m={5} align='center'>
             VTuberライブイベントまとめ
-          </h1>
+          </Typography>
 
           <div>
             <Grid container spacing={4}>
@@ -104,7 +104,7 @@ export default function Home({ events, month }: { events: MdEvent[], month: numb
                                 </div>
                               </React.Fragment>
                             }
-                            placement="top">
+                            placement="bottom">
                             <div>{arg.event.title}</div>
                           </HtmlTooltip>
                         </div>
@@ -118,15 +118,24 @@ export default function Home({ events, month }: { events: MdEvent[], month: numb
                 </Box>
               </Grid>
               <Grid item md={6}>
-                <h2>{listTitle}</h2>
+                <Typography variant='h4' className='h2' my={2}>{listTitle}</Typography>
                 <Grid container spacing={3}>
                   {listedEvents.length > 0 ? listedEvents.map(e => {
                     return (
                       <Grid item xs={12} key={e.file.id}>
                         <Card>
                           <CardContent>
-                            <div>{e.file.matter.start}~</div>
-                            <h3>{e.file.matter.title}</h3>
+                            <Typography>{e.file.matter.start}~</Typography>
+                            <Typography
+                              variant='h5'
+                              className='h3' 
+                              my={2}
+                              sx={{
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              {e.file.matter.title}
+                            </Typography>
                             <Typography mb={2}>出演者: {getStringFromArray(e.file.matter.actors)}</Typography>
                             <Typography>場所: {getStringFromArray(e.file.matter.places)}</Typography>
                           </CardContent>
