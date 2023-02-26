@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build && next export && next-sitemap --config sitemap.config.js",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
