@@ -12,6 +12,7 @@ import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
+import Link from '@mui/material/Link'
 
 const GA_TRACKING_ID = "G-KWMLJ6PYMB" // 'G-XXXXX'
 
@@ -72,6 +73,13 @@ export default function Home({ events, month }: { events: MdEvent[], month: numb
         </>
         <title>VTuberライブイベントまとめ | TOP</title>
         <meta name="description" content="VTuberのライブイベントをまとめています。今月のライブをカレンダー形式で表示。" />
+        <meta property="og:title" content="VTuberライブイベントまとめ | TOP" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://v-event.wedio.jp" />
+        <meta property="og:image" content="https://v-event.wedio.jp/img/top.png" />
+        <meta property="og:site_name" content="VTuberライブイベントまとめ" />
+        <meta property="og:description" content="VTuberのライブイベントをまとめています。今月のライブをカレンダー形式で表示。" />
+        <meta name="twitter:card" content="summary" />
       </Head>
 
       <main>
@@ -140,7 +148,7 @@ export default function Home({ events, month }: { events: MdEvent[], month: numb
                             <Typography>場所: {getStringFromArray(e.file.matter.places)}</Typography>
                           </CardContent>
                           <CardActions>
-                            <Button href={e.file.matter.url}>公式サイトはこちら</Button>
+                            <Button href={e.file.matter.url}>公式ページはこちら</Button>
                           </CardActions>
                         </Card>
                       </Grid>
@@ -155,6 +163,13 @@ export default function Home({ events, month }: { events: MdEvent[], month: numb
       </main>
 
       <footer>
+        <Box mt={10} mb={2}>
+          <Link href='https://forms.gle/jkD83bLYVrRbnCca6' underline='none'>
+            <Typography align='center'>
+              お問い合わせ
+            </Typography>
+          </Link>
+        </Box>
       </footer>
     </div>
   )
